@@ -1,0 +1,77 @@
+{
+  "name": "triage-core",
+  "description": "Core behavior of the support triage agent: correct intent handling, KB grounding, ticket filing, escalation of angry customers.",
+  "target": { "type": "mock" },
+  "regression_threshold": 5,
+  "cases": [
+    {
+      "name": "billing: refund request",
+      "input": { "question": "I was charged twice this month, I want a refund" },
+      "checks": [
+        { "type": "contains", "value": "refund" },
+        { "type": "regex", "value": "TCK-\\d+" },
+        { "type": "min_output_length", "value": 80 }
+      ]
+    },
+    {
+      "name": "billing: duplicate tax on invoice",
+      "input": { "question": "Why did my invoice include tax twice?" },
+      "checks": [
+        { "type": "contains", "value": "billing" },
+        { "type": "regex", "value": "TCK-\\d+" }
+      ]
+    },
+    {
+      "name": "billing: angry customer escalates",
+      "input": { "question": "UNACCEPTABLE — I WANT MY MONEY BACK, I'M CALLING MY LAWYER" },
+      "checks": [
+        { "type": "contains", "value": "sorry" },
+        { "type": "contains", "value": "escalat" },
+        { "type": "contains", "value": "priority" },
+        { "type": "min_output_length", "value": 100 }
+      ]
+    },
+    {
+      "name": "technical: API 500",
+      "input": { "question": "The API returns 500 on /v1/sync" },
+      "checks": [
+        { "type": "contains", "value": "technical" },
+        { "type": "regex", "value": "TCK-\\d+" },
+        { "type": "min_output_length", "value": 80 }
+      ]
+    },
+    {
+      "name": "technical: webhook failures",
+      "input": { "question": "The webhook deliveries are failing" },
+      "checks": [
+        { "type": "contains", "value": "diagnosis" },
+        { "type": "regex", "value": "TCK-\\d+" }
+      ]
+    },
+    {
+      "name": "account: password reset",
+      "input": { "question": "I forgot my password and cannot sign in" },
+      "checks": [
+        { "type": "contains", "value": "account" },
+        { "type": "not_contains", "value": "TCK-" },
+        { "type": "min_output_length", "value": 60 }
+      ]
+    },
+    {
+      "name": "sales: pricing question",
+      "input": { "question": "What does the Pro plan cost?" },
+      "checks": [
+        { "type": "contains", "value": "plan" },
+        { "type": "not_contains", "value": "TCK-" }
+      ]
+    },
+    {
+      "name": "general: docs pointer",
+      "input": { "question": "Where are your docs?" },
+      "checks": [
+        { "type": "contains", "value": "docs" },
+        { "type": "min_output_length", "value": 60 }
+      ]
+    }
+  ]
+}

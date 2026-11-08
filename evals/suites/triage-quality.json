@@ -1,0 +1,80 @@
+{
+  "name": "triage-quality",
+  "description": "Answer quality judged by an LLM (Groq when GROQ_API_KEY is set, deterministic heuristic otherwise): empathy, grounding, clear next steps.",
+  "target": { "type": "mock" },
+  "regression_threshold": 5,
+  "cases": [
+    {
+      "name": "quality: angry refund handled with care",
+      "input": { "question": "UNACCEPTABLE — I WANT MY MONEY BACK, I'M CALLING MY LAWYER" },
+      "checks": [
+        {
+          "type": "judge",
+          "name": "qa-judge",
+          "min": 5,
+          "criteria": "The answer must acknowledge the customer's frustration, apologize, escalate appropriately, and propose a concrete next step. Professional and empathetic tone."
+        }
+      ]
+    },
+    {
+      "name": "quality: API 500 diagnosis",
+      "input": { "question": "The API returns 500 on /v1/sync" },
+      "checks": [
+        {
+          "type": "judge",
+          "name": "qa-judge",
+          "min": 5,
+          "criteria": "The answer must give a clear diagnosis path and an actionable next step for a 5xx API error. No invented technical claims."
+        }
+      ]
+    },
+    {
+      "name": "quality: pricing accuracy",
+      "input": { "question": "What does the Pro plan cost?" },
+      "checks": [
+        {
+          "type": "judge",
+          "name": "qa-judge",
+          "min": 5,
+          "criteria": "The answer must state Pro plan pricing clearly and stay helpful. Ground truth: the Pro plan costs $29/month — treat that figure as authoritative, never as an invented number. No other prices or plan features may be fabricated."
+        }
+      ]
+    },
+    {
+      "name": "quality: password reset helpfulness",
+      "input": { "question": "I forgot my password and cannot sign in" },
+      "checks": [
+        {
+          "type": "judge",
+          "name": "qa-judge",
+          "min": 5,
+          "criteria": "The answer must be helpful for a locked-out user, reference the reset flow, and set expectations on timing."
+        }
+      ]
+    },
+    {
+      "name": "quality: webhook incident tone",
+      "input": { "question": "The webhook deliveries are failing" },
+      "checks": [
+        {
+          "type": "judge",
+          "name": "qa-judge",
+          "min": 5,
+          "criteria": "The answer must be professional, give a concrete remediation path, and confirm follow-up via a ticket."
+        }
+      ]
+    },
+    {
+      "name": "quality: status page directness",
+      "input": { "question": "Do you have a status page?" },
+      "checks": [
+        {
+          "type": "judge",
+          "name": "qa-judge",
+          "min": 5,
+          "criteria": "The answer must directly address the question, stay concise, and point to relevant resources."
+        }
+      ]
+    }
+  ]
+}
